@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lunar Hex Sizzle</title>
+<style>
+:root{--bg:#050506;--copper:#cf8f5e}
+html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
+#stage{position:fixed;inset:0}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+#hud{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 48%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.veil{position:absolute;inset:0;pointer-events:none;opacity:0}
+#flash{background:#f6f2ec;mix-blend-mode:screen}
+#blackout{background:#000}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl"></canvas>
+  <svg id="hud" xmlns="http://www.w3.org/2000/svg">
+    <g id="reticle" fill="none" stroke="var(--copper)" stroke-width="1.25" opacity="0">
+      <polygon id="retHex" stroke-linejoin="round"></polygon>
+      <polygon id="retHexIn" stroke-dasharray="3 5" opacity=".6"></polygon>
+    </g>
+  </svg>
+  <div class="vignette"></div>
+  <div class="veil" id="flash"></div>
+  <div class="veil" id="blackout"></div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const GLB = { slab: 'hex.glb' };
+
+// ---------- timeline (seconds) ----------
+// 0–2.2 moon turns and settles · 1.2–2.2 hex reticle captures a site · 2.2–3.4 push in
+// 3.4 the captured hexagon becomes the slab, already at three-quarter · 3.4–8.4 slow orbit + push in · 8.4–9 out
+const T = 9;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lin = (t, a, b) => clamp((t - a) / (b - a));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const eout = x => 1 - Math.pow(1 - x, 3);
+const env = (t, a, b, fi = .5, fo = .5) => Math.min(lin(t, a, a + fi), 1 - lin(t, b - fo, b));
+const fixedT = new URLSearchParams(location.search).get('t');
+const SWAP = 3.4;
+
+// ---------- renderer ----------
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050506);
+const camera = new THREE.PerspectiveCamera(32, 1, 0.01, 200);
+const CAM0 = new THREE.Vector3(0, 0, 7.8);
+
+const sun = new THREE.DirectionalLight(0xfff6ea, 3.4);
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0xbfcde0, .3);
+scene.add(fill);
+const rim = new THREE.DirectionalLight(0xcf8f5e, 1.2);
+rim.position.set(2.5, 2, -3);
+scene.add(rim);
+const amb = new THREE.AmbientLight(0xffffff, .06);
+scene.add(amb);
+
+// ---------- stars ----------
+{
+  const n = 1800, pos = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, r = 60, s = Math.sqrt(1 - u * u);
+    pos.set([r * s * Math.cos(a), r * u, r * s * Math.sin(a) - 20], i * 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xcfc8bd, size: 0.09, transparent: true, opacity: .7 })));
+}
+
+// ---------- procedural moon ----------
+function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+function moonMaps() {
+  const W = 2048, H = 1024, R = rng(1969);
+  const albedo = document.createElement('canvas'); albedo.width = W; albedo.height = H;
+  const bump = document.createElement('canvas'); bump.width = W; bump.height = H;
+  const a = albedo.getContext('2d'), b = bump.getContext('2d');
+  a.fillStyle = '#aba79f'; a.fillRect(0, 0, W, H);
+  b.fillStyle = '#808080'; b.fillRect(0, 0, W, H);
+  const blob = (ctx, x, y, rx, ry, col, alpha) => {
+    for (const dx of [-W, 0, W]) {
+      const g = ctx.createRadialGradient(x + dx, y, 0, x + dx, y, rx);
+      g.addColorStop(0, `rgba(${col},${alpha})`); g.addColorStop(.6, `rgba(${col},${alpha * .7})`); g.addColorStop(1, `rgba(${col},0)`);
+      ctx.save(); ctx.translate(x + dx, y); ctx.scale(1, ry / rx); ctx.translate(-(x + dx), -y);
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x + dx, y, rx, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  };
+  // highland mottling
+  for (let i = 0; i < 2600; i++) {
+    const v = R() < .5 ? '255,250,240' : '40,38,36';
+    blob(a, R() * W, R() * H, 6 + R() * 40, 6 + R() * 30, v, .05);
+  }
+  // maria (clustered on one hemisphere, like the near side)
+  for (let i = 0; i < 70; i++) {
+    const x = W * (.5 + (R() - .5) * .42), y = H * (.5 + (R() - .5) * .5);
+    blob(a, x, y, 40 + R() * 150, 30 + R() * 110, '52,50,48', .22 + R() * .2);
+    blob(b, x, y, 40 + R() * 150, 30 + R() * 110, '110,110,110', .25);
+  }
+  // craters, power-law sizes
+  for (let i = 0; i < 2400; i++) {
+    const y = H * (.06 + R() * .88), lat = (0.5 - y / H) * Math.PI;
+    const x = R() * W, r = Math.min(70, 1.6 * Math.pow(R(), -0.55));
+    const sx = 1 / Math.max(.25, Math.cos(lat));
+    for (const dx of [-W, 0, W]) {
+      b.save(); b.translate(x + dx, y); b.scale(sx, 1);
+      let g = b.createRadialGradient(0, 0, 0, 0, 0, r * 1.45);
+      g.addColorStop(0, 'rgba(40,40,40,.9)'); g.addColorStop(.62, 'rgba(95,95,95,.7)');
+      g.addColorStop(.69, 'rgba(215,215,215,.85)'); g.addColorStop(.8, 'rgba(160,160,160,.4)'); g.addColorStop(1, 'rgba(128,128,128,0)');
+      b.fillStyle = g; b.beginPath(); b.arc(0, 0, r * 1.45, 0, Math.PI * 2); b.fill(); b.restore();
+      if (r > 6) {
+        a.save(); a.translate(x + dx, y); a.scale(sx, 1);
+        g = a.createRadialGradient(0, 0, r * .5, 0, 0, r * (R() < .08 ? 4 : 1.6));
+        g.addColorStop(0, 'rgba(235,230,220,.18)'); g.addColorStop(1, 'rgba(235,230,220,0)');
+        a.fillStyle = g; a.beginPath(); a.arc(0, 0, r * 4, 0, Math.PI * 2); a.fill(); a.restore();
+      }
+    }
+  }
+  const mk = (c, srgb) => { const t = new THREE.CanvasTexture(c); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
+  return { map: mk(albedo, true), bumpMap: mk(bump, false) };
+}
+
+const MOON_R = 1.5;
+const moonTilt = new THREE.Group();
+moonTilt.rotation.set(0.3, 0, 0.1);
+scene.add(moonTilt);
+const moonMat = new THREE.MeshStandardMaterial({ ...moonMaps(), bumpScale: 3, roughness: 1, metalness: 0, transparent: true });
+const moon = new THREE.Mesh(new THREE.SphereGeometry(MOON_R, 160, 120), moonMat);
+moonTilt.add(moon);
+
+// the captured site
+const LAT = 20.19, U0 = 0.585;
+const th = THREE.MathUtils.degToRad(90 - LAT), ph = 2 * Math.PI * U0;
+const targetLocal = new THREE.Vector3(-Math.cos(ph) * Math.sin(th), Math.cos(th), Math.sin(ph) * Math.sin(th)).multiplyScalar(MOON_R);
+const target = new THREE.Object3D(); target.position.copy(targetLocal); moon.add(target);
+const R_FACE = Math.atan2(-targetLocal.x, targetLocal.z);
+
+// ---------- the slab (mojulo sk_4tr1ovzadu: hex r 2.6 cm, 1.2 cm thick, z-up) ----------
+const slab = new THREE.Group(); slab.position.y = .22; scene.add(slab); // lifted: the 3/4 view hangs the walls below centre
+const pivot = new THREE.Group(); slab.add(pivot);
+const HEX_R = 2.6, TILE_H = 1.2;
+const mats = [];
+const gltf = await new GLTFLoader().loadAsync(GLB.slab);
+const root = gltf.scene.getObjectByName('mojulo');
+// GLTFLoader strips ':' from node names, so 'hex:pbr' arrives as 'hexpbr'; drop the studio grid + cameras
+[...root.children].forEach(c => { if (!/pbr$/.test(c.name)) root.remove(c); });
+const TONE = { vesiclespbr: .62, craterpbr: .9, rimpbr: 1 };
+root.traverse(o => {
+  if (!o.isMesh) return;
+  const k = TONE[o.name] ?? TONE[o.parent?.name] ?? 1;
+  const m = new THREE.MeshStandardMaterial({ vertexColors: true, color: new THREE.Color(k, k, k), roughness: .62, metalness: 0 }); // opaque: the fade is done by the blackout veil
+  o.material = m; mats.push(m);
+});
+pivot.add(gltf.scene);
+gltf.scene.updateMatrixWorld(true);
+const c = new THREE.Box3().setFromObject(gltf.scene).getCenter(new THREE.Vector3());
+gltf.scene.position.copy(c).negate();
+const SCALE = 3.4 / (2 * HEX_R / Math.cos(Math.PI / 6) * 0.01);
+pivot.scale.setScalar(SCALE);
+const RAKE = new THREE.Vector3(-.85, .45, .22).normalize(); // slab space: low sun from -x
+
+// ---------- HUD ----------
+const $ = id => document.getElementById(id);
+const hud = $('hud');
+let W = 1, H = 1;
+function resize() {
+  W = innerWidth; H = innerHeight;
+  renderer.setSize(W, H, false);
+  camera.aspect = W / H;
+  camera.fov = W / H < 1 ? 50 : 32;
+  camera.updateProjectionMatrix();
+  hud.setAttribute('viewBox', `0 0 ${W} ${H}`);
+}
+addEventListener('resize', resize); resize();
+
+const v3 = new THREE.Vector3();
+const toScreen = v => { v3.copy(v).project(camera); return [(v3.x + 1) / 2 * W, (1 - v3.y) / 2 * H]; };
+const hexPts = (cx, cy, r, rot) => Array.from({ length: 6 }, (_, i) => {
+  const a = rot + Math.PI / 3 * i; return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+}).join(' ');
+// the slab's top face on screen, so the reticle can hand its shape to the object
+const corner = new THREE.Vector3();
+function slabTopOnScreen() {
+  root.updateMatrixWorld(true);
+  return Array.from({ length: 6 }, (_, i) => {
+    const a = Math.PI / 3 * i, R = HEX_R / Math.cos(Math.PI / 6);
+    corner.set(R * Math.cos(a), R * Math.sin(a), TILE_H).applyMatrix4(root.matrixWorld);
+    return toScreen(corner);
+  });
+}
+
+// slab pose: three-quarter from the first frame, a slow orbit and a steady push in
+function poseSlab(t) {
+  const k = Math.max(0, t - SWAP);
+  slab.rotation.set(.92 - .06 * ease(lin(t, SWAP, T)), .3 + .16 * k, 0);
+  slab.scale.setScalar(1 + .16 * ease(lin(t, SWAP, T - .3)));
+}
+// how big the slab's face reads on screen at the swap: the reticle grows to exactly this
+// where the slab's top face sits on screen at the swap: the reticle morphs into exactly this outline
+let SWAP_PTS = [], SWAP_C = [0, 0];
+function measureSwap() {
+  camera.position.copy(CAM0); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
+  poseSlab(SWAP); slab.updateMatrixWorld(true);
+  SWAP_PTS = slabTopOnScreen();
+  SWAP_C = [SWAP_PTS.reduce((a, p) => a + p[0], 0) / 6, SWAP_PTS.reduce((a, p) => a + p[1], 0) / 6];
+}
+measureSwap(); addEventListener('resize', measureSwap);
+
+const tw = new THREE.Vector3(), tn = new THREE.Vector3(), look = new THREE.Vector3();
+const t0 = performance.now();
+function frame(now) {
+  const t = fixedT !== null ? +fixedT : ((now - t0) / 1000) % T;
+
+  // --- moon ---
+  const moonOn = t < SWAP;
+  moon.visible = moonOn;
+  moon.rotation.y = R_FACE - 1.3 * Math.pow(1 - clamp(t / 2.1), 2);
+  moonMat.opacity = lin(t, 0, .5);
+  moonTilt.scale.setScalar(.94 + .06 * eout(lin(t, 0, 2.2)));
+  target.getWorldPosition(tw); tn.copy(tw).normalize();
+  const push = ease(lin(t, 2.2, SWAP));
+  if (moonOn) {
+    camera.position.lerpVectors(CAM0, tw.clone().addScaledVector(tn, .08), Math.pow(push, 1.6));
+    look.set(0, 0, 0).lerp(tw, ease(lin(t, 1.4, 2.4)));
+  } else { camera.position.copy(CAM0); look.set(0, 0, 0); }
+  camera.lookAt(look);
+
+  // --- slab ---
+  slab.visible = !moonOn;
+  poseSlab(t);
+
+  // --- light ---
+  if (moonOn) {
+    sun.position.set(-4, 1.2, 0.9); sun.intensity = 3.4; fill.position.set(3, -1, 2); fill.intensity = .3; amb.intensity = .06;
+  } else {
+    slab.updateMatrixWorld(true);
+    sun.position.copy(RAKE).transformDirection(pivot.matrixWorld).multiplyScalar(5); // raking: craters cast relief
+    sun.intensity = 2.6; fill.position.set(1.5, -.8, 5); fill.intensity = .45; amb.intensity = .1;
+  }
+
+  renderer.render(scene, camera);
+
+  // --- reticle: captures the site, grows with the push, then becomes the slab's outline ---
+  const ret = $('reticle');
+  if (moonOn) {
+    const on = lin(t, 1.2, 1.4);
+    ret.setAttribute('opacity', on);
+    if (on > 0) {
+      const [x, y] = toScreen(tw);
+      const acq = eout(lin(t, 1.2, 2.1));
+      const r = THREE.MathUtils.lerp(Math.min(W, H) * .3, 22, acq);
+      const spin = (1 - acq) * 1.4;
+      // a regular hexagon whose corners point the way the slab's corners will, morphing into the slab outline
+      const pts = SWAP_PTS.map(([px, py]) => {
+        const a = Math.atan2(py - SWAP_C[1], px - SWAP_C[0]) + spin;
+        const rx = x + r * Math.cos(a), ry = y + r * Math.sin(a);
+        return [THREE.MathUtils.lerp(rx, px, push), THREE.MathUtils.lerp(ry, py, push)];
+      });
+      $('retHex').setAttribute('points', pts.map(p => p.join(',')).join(' '));
+      $('retHexIn').setAttribute('points', hexPts(x, y, r * .55, -(1 - acq) * 2));
+      $('retHexIn').setAttribute('opacity', .6 * (1 - push));
+    }
+  } else {
+    const on = 1 - lin(t, SWAP + .1, SWAP + .8);
+    ret.setAttribute('opacity', on);
+    if (on > 0) {
+      $('retHex').setAttribute('points', slabTopOnScreen().map(p => p.join(',')).join(' '));
+      $('retHexIn').setAttribute('opacity', 0);
+    }
+  }
+
+  $('flash').style.opacity = .6 * env(t, SWAP - .2, SWAP + .4, .2, .4);
+  $('blackout').style.opacity = Math.max(lin(t, T - .7, T), 1 - lin(t, 0, .4));
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

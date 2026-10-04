@@ -1,0 +1,983 @@
+{
+  "kind": "workbench",
+  "fields": [
+    {
+      "cells": 128,
+      "terms": [
+        {
+          "id": "hex",
+          "op": "add",
+          "shape": {
+            "kind": "expr",
+            "d": "let ax = abs(x); let ay = abs(y); max(max(ax * 0.8660254 + ay * 0.5, ay) - r, abs(z - hz) - hz) + g * (noise3(x, y, z, 77, gs, 2, 0.5) - 0.5)",
+            "vars": {
+              "r": 2.6,
+              "hz": 0.6,
+              "g": 0.035,
+              "gs": 2.2
+            },
+            "bounds": {
+              "min": [
+                -3.2,
+                -3.2,
+                -0.1
+              ],
+              "max": [
+                3.2,
+                3.2,
+                1.35
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.136,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.6,
+              0.5,
+              2.151
+            ],
+            "radius": 1.359
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.059,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": -0.6,
+              "cy": 0.5,
+              "a": 0.97,
+              "zt": 1.26,
+              "t": 0.116
+            },
+            "bounds": {
+              "min": [
+                -1.736,
+                -0.636,
+                1.084
+              ],
+              "max": [
+                0.536,
+                1.636,
+                1.436
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.08,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              1.3,
+              -0.75,
+              1.759
+            ],
+            "radius": 0.798
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.038,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": 1.3,
+              "cy": -0.75,
+              "a": 0.57,
+              "zt": 1.26,
+              "t": 0.068
+            },
+            "bounds": {
+              "min": [
+                0.612,
+                -1.438,
+                1.132
+              ],
+              "max": [
+                1.988,
+                -0.062,
+                1.388
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.059,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              2.3,
+              0.9,
+              1.612
+            ],
+            "radius": 0.588
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.031,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": 2.3,
+              "cy": 0.9,
+              "a": 0.42,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                1.78,
+                0.38,
+                1.15
+              ],
+              "max": [
+                2.82,
+                1.42,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.042,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.6,
+              -1.2,
+              1.494
+            ],
+            "radius": 0.42
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.025,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": -1.6,
+              "cy": -1.2,
+              "a": 0.3,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                -1.99,
+                -1.59,
+                1.15
+              ],
+              "max": [
+                -1.21,
+                -0.81,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.031,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              0.4,
+              -1.65,
+              1.416
+            ],
+            "radius": 0.308
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.021,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": 0.4,
+              "cy": -1.65,
+              "a": 0.22,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                0.09,
+                -1.96,
+                1.15
+              ],
+              "max": [
+                0.71,
+                -1.34,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "peak",
+          "op": "add",
+          "blend": 0.12,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.6,
+              0.5,
+              0.7
+            ],
+            "radius": 0.28
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.016,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.577,
+              0.055,
+              1.309
+            ],
+            "radius": 0.156
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.009,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              1.465,
+              -1.867,
+              1.261
+            ],
+            "radius": 0.087
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.03,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              0.967,
+              -2.107,
+              1.409
+            ],
+            "radius": 0.299
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.021,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": 0.967,
+              "cy": -2.107,
+              "a": 0.213,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                0.664,
+                -2.411,
+                1.15
+              ],
+              "max": [
+                1.271,
+                -1.804,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.008,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              0.142,
+              -2.026,
+              1.253
+            ],
+            "radius": 0.076
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.011,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.29,
+              -2.162,
+              1.28
+            ],
+            "radius": 0.114
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.013,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.297,
+              1.575,
+              1.288
+            ],
+            "radius": 0.126
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.017,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              0.701,
+              -0.001,
+              1.316
+            ],
+            "radius": 0.166
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.031,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.213,
+              -1.02,
+              1.415
+            ],
+            "radius": 0.307
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.021,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": -0.213,
+              "cy": -1.02,
+              "a": 0.219,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                -0.522,
+                -1.33,
+                1.15
+              ],
+              "max": [
+                0.096,
+                -0.711,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.02,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.055,
+              -1.977,
+              1.342
+            ],
+            "radius": 0.203
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.01,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.498,
+              1.594,
+              1.27
+            ],
+            "radius": 0.099
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.03,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              2.051,
+              -0.138,
+              1.409
+            ],
+            "radius": 0.298
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.021,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": 2.051,
+              "cy": -0.138,
+              "a": 0.213,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                1.749,
+                -0.441,
+                1.15
+              ],
+              "max": [
+                2.354,
+                0.165,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.016,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.513,
+              -1.964,
+              1.309
+            ],
+            "radius": 0.156
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.02,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.837,
+              2.135,
+              1.34
+            ],
+            "radius": 0.199
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.007,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.91,
+              -1.167,
+              1.25
+            ],
+            "radius": 0.072
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.011,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.612,
+              0.273,
+              1.277
+            ],
+            "radius": 0.111
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.007,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.547,
+              1.067,
+              1.251
+            ],
+            "radius": 0.073
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.011,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              0.719,
+              -1.764,
+              1.274
+            ],
+            "radius": 0.105
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.024,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.446,
+              -0.486,
+              1.367
+            ],
+            "radius": 0.238
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.019,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": -1.446,
+              "cy": -0.486,
+              "a": 0.17,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                -1.707,
+                -0.747,
+                1.15
+              ],
+              "max": [
+                -1.186,
+                -0.226,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.03,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              0.709,
+              -1.838,
+              1.412
+            ],
+            "radius": 0.303
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.021,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": 0.709,
+              "cy": -1.838,
+              "a": 0.216,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                0.403,
+                -2.144,
+                1.15
+              ],
+              "max": [
+                1.015,
+                -1.532,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.007,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.855,
+              -0.937,
+              1.25
+            ],
+            "radius": 0.071
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.008,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -2.049,
+              0.381,
+              1.256
+            ],
+            "radius": 0.081
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.011,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              0.506,
+              -0.59,
+              1.278
+            ],
+            "radius": 0.112
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.014,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              2.296,
+              -0.075,
+              1.298
+            ],
+            "radius": 0.14
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.007,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              1.833,
+              -1.459,
+              1.252
+            ],
+            "radius": 0.074
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.019,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.253,
+              -1.427,
+              1.335
+            ],
+            "radius": 0.193
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.007,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              0.518,
+              -0.361,
+              1.25
+            ],
+            "radius": 0.072
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.008,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.308,
+              0.941,
+              1.257
+            ],
+            "radius": 0.082
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.009,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              1.619,
+              0.444,
+              1.26
+            ],
+            "radius": 0.086
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.007,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.623,
+              1.014,
+              1.249
+            ],
+            "radius": 0.071
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.024,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.358,
+              0.273,
+              1.366
+            ],
+            "radius": 0.238
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.018,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": -1.358,
+              "cy": 0.273,
+              "a": 0.17,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                -1.618,
+                0.013,
+                1.15
+              ],
+              "max": [
+                -1.098,
+                0.533,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.027,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              0.572,
+              -1.011,
+              1.387
+            ],
+            "radius": 0.267
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.02,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": 0.572,
+              "cy": -1.011,
+              "a": 0.191,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                0.291,
+                -1.292,
+                1.15
+              ],
+              "max": [
+                0.852,
+                -0.73,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.008,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -1.48,
+              -2.224,
+              1.258
+            ],
+            "radius": 0.083
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.008,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.271,
+              -2.022,
+              1.253
+            ],
+            "radius": 0.075
+          }
+        },
+        {
+          "id": "crater",
+          "op": "subtract",
+          "blend": 0.03,
+          "shape": {
+            "kind": "sphere",
+            "center": [
+              -0.689,
+              1.798,
+              1.409
+            ],
+            "radius": 0.298
+          }
+        },
+        {
+          "id": "rim",
+          "op": "add",
+          "blend": 0.021,
+          "shape": {
+            "kind": "expr",
+            "d": "len2(len2(x - cx, y - cy) - a, z - zt) - t",
+            "vars": {
+              "cx": -0.689,
+              "cy": 1.798,
+              "a": 0.213,
+              "zt": 1.26,
+              "t": 0.05
+            },
+            "bounds": {
+              "min": [
+                -0.992,
+                1.496,
+                1.15
+              ],
+              "max": [
+                -0.386,
+                2.101,
+                1.37
+              ]
+            }
+          }
+        },
+        {
+          "id": "vesicles",
+          "op": "subtract",
+          "shape": {
+            "kind": "expr",
+            "d": "(thr - noise3(x, y, z, 1969, sc, 2, 0.5)) * k",
+            "vars": {
+              "thr": 0.67,
+              "sc": 0.8,
+              "k": 3
+            },
+            "reach": 4
+          }
+        }
+      ],
+      "tint": "#ece9e3",
+      "material": "stone"
+    }
+  ],
+  "units": "cm",
+  "title": "Lunar hex tile — cratered vesicular surface",
+  "ledger": {
+    "recipe_bytes": 8268,
+    "faces": 32298,
+    "closed": true
+  }
+}
